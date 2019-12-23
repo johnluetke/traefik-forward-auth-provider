@@ -1,0 +1,22 @@
+{
+  "name": "traefik-oauth-provider",
+  "version": "0.0.1",
+  "description": "Allows Traefik to forward authentication requests to a third-party OAuth provider",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "prebuild": "",
+    "prestart": "npm run build",
+    "start": "node ./dist/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.2",
+    "typescript": "^3.7.4"
+  }
+}
