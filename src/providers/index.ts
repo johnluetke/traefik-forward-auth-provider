@@ -1,6 +1,6 @@
 export interface Provider {
     exchangeCode(): void;
-    loginUrl(): string;
+    loginUrl(redirectUrl: string, state: string): string;
     name(): string;
     tokenUrl(): string;
     userUrl(): string | null;
@@ -10,12 +10,15 @@ export interface Provider {
 const providers = new Map<string, Provider>();
 
 export function getProviderByName(name: string, config: any = {}): Provider {
-    if (providers.has(name)) {
-        return providers.get(name) as Provider;
-    } else {
+    if (!providers.has(name)) {
         switch (name) {
+            case "home-assistant":
+                providers.set(name, new HomeAssistant(config));
+                break;
             default:
                 throw new Error(`Unknown provider ${name}`);
         }
     }
+
+    return providers.get(name) as Provider;
 }

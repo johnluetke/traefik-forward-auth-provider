@@ -5,7 +5,8 @@ import { getProviderByName } from './providers';
 const name = require("../package.json").name;
 const configLoader = cosmiconfigSync(name);
 
-interface Config {
+export interface Config {
+    csrfCookieName: string;
     port: number;
     provider: string;
     providers: {[key: string]: any};
