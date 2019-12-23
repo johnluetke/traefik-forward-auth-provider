@@ -13,10 +13,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cosmiconfig": "^6.0.0",
     "express": "^4.17.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
     "typescript": "^3.7.4"
+  },
+  "traefik-oauth-provider": {
+    "port": 8080
   }
 }
