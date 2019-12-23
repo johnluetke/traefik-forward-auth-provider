@@ -21,6 +21,9 @@
     "typescript": "^3.7.4"
   },
   "traefik-oauth-provider": {
-    "port": 8080
+    "port": 8080,
+    "provider": "",
+    "providers": {
+    }
   }
 }

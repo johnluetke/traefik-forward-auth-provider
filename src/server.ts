@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
-import * as configuration from './config';
+import { loadConfiguration, validateConfiguration } from './config';
 
-const config = configuration.load();
-configuration.validate();
+const config = loadConfiguration();
+validateConfiguration();
 
 const app = express()
 const version = require("../package.json").version;
