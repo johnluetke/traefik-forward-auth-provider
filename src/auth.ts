@@ -83,7 +83,7 @@ export function validateCsrfCookie(req: Request, res: Response, config: Config):
         console.error("Invalid CSRF cookie value");
         return false;
 	} else if (state.length < 34) {
-        console.error("Invalid CSRF cookie value");
+        console.error("Invalid state value");
         return false;
     } else if (!state.startsWith(csrf)) {
         console.error("CSRF value does not match state");

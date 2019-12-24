@@ -8,7 +8,7 @@
     "prebuild": "",
     "prestart": "npm run build",
     "start": "node ./dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -21,7 +21,15 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.2",
+    "@types/jest": "^24.0.24",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.2.0",
+    "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "traefik-oauth-provider": {
     "csrfCookieName": "_traefik-oauth-provider-csrf",
