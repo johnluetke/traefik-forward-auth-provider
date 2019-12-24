@@ -4,6 +4,7 @@ export function ensureTraefikRequest(req: Request, res: Response, next: () => vo
     const headers = {
         'x-forwarded-proto': 'http',
         'x-forwarded-host': req.headers.host,
+        'x-forwarded-uri': '/',
     } as any;
 
     Object.keys(headers).forEach(header => {

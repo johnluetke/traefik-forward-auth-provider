@@ -1,10 +1,16 @@
 export interface Provider {
-    exchangeCode(): void;
+    exchangeCode(redirectUrl: string, code: string): string;
     loginUrl(redirectUrl: string, state: string): string;
     name(): string;
     tokenUrl(): string;
-    userUrl(): string | null;
+    getUser(token: string): User;
     validate(): boolean;
+}
+
+export interface User {
+    id: string;
+    email: string;
+    verified: boolean;
 }
 
 const providers = new Map<string, Provider>();
