@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 
 export function ensureTraefikRequest(req: Request, res: Response, next: () => void) {
     const headers = {
-        'x-forwarded-proto': 'http',
-        'x-forwarded-host': req.headers.host,
-        'x-forwarded-uri': '/',
+        'X-Forwarded-Proto': 'http',
+        'X-Forwarded-Host': req.headers.host,
+        'X-Forwarded-Uri': '/',
     } as any;
 
     Object.keys(headers).forEach(header => {

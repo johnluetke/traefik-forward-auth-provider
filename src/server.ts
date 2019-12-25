@@ -36,7 +36,7 @@ app.get('/', (req: Request, res: Response) => {
         return;
     } else {
         console.debug('Request is valid and authorized');
-        res.header('x-forward-user', getEmailFromAuthCookie(req, config));
+        res.header('X-Forwarded-User', getEmailFromAuthCookie(req, config));
         res.sendStatus(200);
     }
 });
@@ -58,12 +58,26 @@ app.get('/callback', (req: Request, res: Response) => {
     const redirect = getRedirectFromRequest(req);
 
     try {
-        const token = p.exchangeCode(redirectUrl(req), req.query['code']);
-        const user = p.getUser(token);
-        makeAuthCookie(req, res, config, user.email);
-        console.info(`Authenticated ${user.email} via ${p.name()}`)
-        res.redirect(307, redirect);
-        return;
+        p.exchangeCode(redirectUrl(req), req.query['code'])
+        .then(token => {
+            p.getUser(token)
+            .then(user => {
+                makeAuthCookie(req, res, config, user.email);
+                console.info(`Authenticated ${user.email} via ${p.name()}`)
+                res.redirect(307, redirect);
+                return;
+            })
+            .catch(err => {
+                console.error('Failed to get user', err);
+                res.sendStatus(503);
+                return;
+            });
+        })
+        .catch(err => {
+            console.error('Code exchange failed', err);
+            res.sendStatus(503);
+            return;
+        })
     }
     catch (err) {
         console.error('Code exchange failed', err);

@@ -6,7 +6,7 @@ import { Config } from './config';
 import { Provider } from './providers';
 
 function csrfCookieDomain(req: Request): string {
-    return req.header('x-forwarded-host')?.split(':')[0] || '';
+    return req.header('X-Forwarded-Host')?.split(':')[0] || '';
 }
 
 export function getEmailFromAuthCookie(req: Request, config: Config): string {
@@ -74,8 +74,8 @@ export function makeState(req: Request, p: Provider, nonce: string): string {
 }
 
 export function redirectBase(req: Request): string {
-	const proto = req.header('x-forwarded-proto');
-	const host = req.header('x-forwarded-host');
+	const proto = req.header('X-Forwarded-Proto');
+	const host = req.header('X-Forwarded-Host');
 
 	return `${proto}://${host}`;
 }
@@ -85,7 +85,7 @@ export function redirectUrl(req: Request): string {
 }
 
 function returnUrl(req: Request): string {
-	const path = req.header('x-forwarded-uri');
+	const path = req.header('X-Forwarded-Uri');
     return `${redirectBase(req)}${path}`;
 }
 

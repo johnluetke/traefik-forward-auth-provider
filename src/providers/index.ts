@@ -1,9 +1,9 @@
 export interface Provider {
-    exchangeCode(redirectUrl: string, code: string): string;
+    exchangeCode(redirectUrl: string, code: string): Promise<string>;
     loginUrl(redirectUrl: string, state: string): string;
     name(): string;
     tokenUrl(): string;
-    getUser(token: string): User;
+    getUser(token: string): Promise<User>;
     validate(): boolean;
 }
 
