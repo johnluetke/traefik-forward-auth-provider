@@ -2,7 +2,7 @@
   "name": "traefik-forward-auth-provider",
   "version": "0.0.1",
   "description": "Allows Traefik to forward authentication requests to a third-party OAuth provider",
-  "main": "server.js",
+  "bin": "./dist/cli.js",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
