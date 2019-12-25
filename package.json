@@ -1,14 +1,17 @@
 {
-  "name": "traefik-oauth-provider",
+  "name": "traefik-forward-auth-provider",
   "version": "0.0.1",
   "description": "Allows Traefik to forward authentication requests to a third-party OAuth provider",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf dist",
     "prebuild": "",
     "prestart": "npm run build",
+    "prepublish": "npm run package",
     "start": "node ./dist/server.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "package": "npm run build && npm run test && cp package.json dist/"
   },
   "author": "",
   "license": "ISC",
@@ -36,9 +39,9 @@
       "**/*.spec.ts"
   ]
   },
-  "traefik-oauth-provider": {
-    "authCookieName": "_traefik-oauth-provider-user",
-    "csrfCookieName": "_traefik-oauth-provider-csrf",
+  "traefik-forward-auth-provider": {
+    "authCookieName": "_traefik-forward-auth-provider-user",
+    "csrfCookieName": "_traefik-forward-auth-provider-csrf",
     "port": 8080,
     "provider": "home-assistant",
     "providers": {
