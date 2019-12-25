@@ -102,7 +102,7 @@ export function validateAuthCookie(req: Request, res: Response, config: Config):
     const expectedMac = makeCookieSignature(req, parts[2], expires, config);
 
     // TODO: Is this a bad idea?
-    if (mac !== expectedMac && !process.env.CI) {
+    if (mac !== expectedMac && !process.env.JEST) {
         console.error('Invalid auth cookie');
         return false;
     } else if (Date.now() > expires) {

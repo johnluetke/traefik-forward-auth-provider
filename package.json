@@ -2,7 +2,11 @@
   "name": "traefik-forward-auth-provider",
   "version": "0.0.2",
   "description": "Allows Traefik to forward authentication requests to a third-party OAuth provider",
+  "engines": {
+    "node": ">=10.6.0"
+  },
   "bin": "./dist/cli.js",
+  "files": ["dist"],
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist",
@@ -10,8 +14,8 @@
     "prestart": "npm run build",
     "prepublish": "npm run package",
     "start": "node ./dist/server.js",
-    "test": "jest --coverage",
-    "package": "npm run build && npm run test && cp package.json dist/"
+    "test": "JEST=1 jest --coverage",
+    "package": "npm run build && npm run test"
   },
   "author": "",
   "license": "ISC",
