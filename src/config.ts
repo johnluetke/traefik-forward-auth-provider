@@ -1,4 +1,5 @@
 import {cosmiconfigSync} from 'cosmiconfig';
+import * as fs from 'fs';
 
 import { getProviderByName } from './providers';
 
@@ -18,14 +19,25 @@ export interface Config {
 
 let configuration: Config;
 
+const PACKAGE_CONFIG_FILE = './node_modules/traefik-forward-auth-provider/package.json';
+
 export function loadConfiguration(): Config {
+    let defaultConfig = {} as Config;
+    if (fs.existsSync(PACKAGE_CONFIG_FILE)) {
+        console.debug('Loading defaults from library configuration file.');
+        defaultConfig = configLoader.load(PACKAGE_CONFIG_FILE)?.config;
+    }
+    
     const config = configLoader.search();
     if (!config) {
-        console.error('No configuration found!!!');
+        console.debug('Using default configuration.');
+        configuration = defaultConfig;
     } else {
-        configuration = config.config;
+        console.debug('Merging specified configuration with default configuration.');
+        configuration = {...defaultConfig, ...config.config};
     }
 
+    console.debug(`Using configuration: ${JSON.stringify(configuration)}`);
     return configuration;
 };
 
