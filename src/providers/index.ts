@@ -1,9 +1,11 @@
+import { HomeAssistant } from './home-assistant';
+
 export interface Provider {
     exchangeCode(redirectUrl: string, code: string): Promise<string>;
+    getUser(token: string): Promise<User>;
     loginUrl(redirectUrl: string, state: string): string;
     name(): string;
     tokenUrl(): string;
-    getUser(token: string): Promise<User>;
     validate(): boolean;
 }
 
@@ -28,3 +30,5 @@ export function getProviderByName(name: string, config: any = {}): Provider {
 
     return providers.get(name) as Provider;
 }
+
+export { HomeAssistant } from './home-assistant';
