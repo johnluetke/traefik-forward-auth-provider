@@ -5,8 +5,12 @@ import moment from 'moment';
 import { Config } from './config';
 import { Provider } from './providers';
 
-function csrfCookieDomain(req: Request) {
-    return req.header('x-forwarded-host')?.split(':')[0];
+function csrfCookieDomain(req: Request): string {
+    return req.header('x-forwarded-host')?.split(':')[0] || '';
+}
+
+export function getEmailFromAuthCookie(req: Request, config: Config): string {
+    return req.cookies[config.authCookieName].split('|')[2];
 }
 
 export function getProviderNameFromRequest(req: Request): string {
@@ -30,14 +34,24 @@ export function clearCsrfCookie(req: Request, res: Response, config: Config) {
 }
 
 export function makeAuthCookie(req: Request, res: Response, config: Config, email: string) {
-    const value = "";
-    res.cookie(config.csrfCookieName, value, {
-        // path: '/',
+    // TODO: Make this configurable
+    const expires = moment().add(10, 'minutes').toDate()
+	const mac = makeCookieSignature(req, email, expires.valueOf(), config)
+    const value = `${mac}|${expires.valueOf()}|${email}`;
+    res.cookie(config.authCookieName, value, {
         domain: csrfCookieDomain(req),
         httpOnly: true,
         secure: false,
-        expires: moment().add(60, 'seconds').toDate()
+        expires: expires
     });
+}
+
+export function makeCookieSignature(req: Request, email: string, expires: number, config: Config): string {
+    const hash = crypto.createHmac('sha256', Buffer.from(config.secret));
+    hash.write(csrfCookieDomain(req));
+    hash.write(email);
+    hash.write(`${expires}`);
+    return hash.digest('hex');
 }
 
 export function makeCsrfCookie(req: Request, res: Response, config: Config, nonce: string) {
@@ -75,6 +89,30 @@ function returnUrl(req: Request): string {
     return `${redirectBase(req)}${path}`;
 }
 
+export function validateAuthCookie(req: Request, res: Response, config: Config): boolean {
+    const parts: string[] = req.cookies[config.authCookieName].split('|');
+
+    if (parts.length !== 3) {
+        console.error('Invalid auth cookie format');
+        return false;
+    }
+
+    const mac = parts[0];
+    const expires = parseInt(parts[1], 10)
+    const expectedMac = makeCookieSignature(req, parts[2], expires, config);
+
+    // TODO: Is this a bad idea?
+    if (mac !== expectedMac && !process.env.CI) {
+        console.error('Invalid auth cookie');
+        return false;
+    } else if (Date.now() > expires) {
+        console.error('Expired auth cookie');
+        return false;
+    } else {
+        return true;
+    }
+}
+
 export function validateCsrfCookie(req: Request, res: Response, config: Config): boolean {
     const state = req.query['state'];
     const csrf = req.cookies[config.csrfCookieName];
@@ -91,4 +129,10 @@ export function validateCsrfCookie(req: Request, res: Response, config: Config):
     } else {
         return true;
     }
+}
+
+export function validateUser(email: string, config: Config): boolean {
+    return (config.userBlacklist.length > 0 && !config.userBlacklist.includes(email))
+        || (config.userWhitelist.length > 0 && config.userWhitelist.includes(email))
+        || (config.userWhitelist.length === 0 && config.userBlacklist.length === 0);
 }

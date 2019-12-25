@@ -32,10 +32,18 @@
     "testEnvironment": "node"
   },
   "traefik-oauth-provider": {
+    "authCookieName": "_traefik-oauth-provider-user",
     "csrfCookieName": "_traefik-oauth-provider-csrf",
     "port": 8080,
-    "provider": "",
+    "provider": "home-assistant",
     "providers": {
-    }
+      "home-assistant": {
+        "client_id": "http://localhost:8080",
+        "url": "https://hass.johnluetke.com"
+      }
+    },
+    "secret": "sooper-dooper",
+    "userBlacklist": [],
+    "userWhitelist": []
   }
 }

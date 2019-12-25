@@ -2,7 +2,7 @@ import cookieParser from 'cookie-parser';
 import express, { Request, Response } from 'express';
 import { loadConfiguration, validateConfiguration } from './config';
 import { getProviderByName } from './providers';
-import { makeNonce, makeCsrfCookie, makeState, redirectUrl, validateCsrfCookie, getProviderNameFromRequest, clearCsrfCookie, getRedirectFromRequest, makeAuthCookie } from './auth';
+import { makeNonce, makeCsrfCookie, makeState, redirectUrl, validateCsrfCookie, getProviderNameFromRequest, clearCsrfCookie, getRedirectFromRequest, makeAuthCookie, validateAuthCookie, validateUser, getEmailFromAuthCookie } from './auth';
 import { ensureTraefikRequest } from './traefik';
 
 const config = loadConfiguration();
@@ -15,15 +15,30 @@ const version = require("../package.json").version;
 
 app.get('/', (req: Request, res: Response) => {
     console.debug("Authenticating request");
-
     const p = getProviderByName(config.provider);
     const nonce = makeNonce();
 
-    makeCsrfCookie(req, res, config, nonce);
-
-    const loginUrl = p.loginUrl(redirectUrl(req), makeState(req, p, nonce));
-
-    res.redirect(307, `${loginUrl}`);
+    if (!req.cookies[config.authCookieName]) {
+        console.debug(`${config.authCookieName} not found: Forwarding to ${p.name()} login.`);
+        const loginUrl = p.loginUrl(redirectUrl(req), makeState(req, p, nonce));
+        makeCsrfCookie(req, res, config, nonce);
+        res.redirect(307, `${loginUrl}`);
+        return;
+    } else if (!validateAuthCookie(req, res, config)) {
+        console.debug(`${config.authCookieName} is invalid: Forwarding to ${p.name()} login.`);
+        const loginUrl = p.loginUrl(redirectUrl(req), makeState(req, p, nonce));
+        makeCsrfCookie(req, res, config, nonce);
+        res.redirect(307, `${loginUrl}`);
+        return;
+    } else if (!validateUser(getEmailFromAuthCookie(req, config), config)) {
+        console.debug(`${config.authCookieName} is unauthorized.`);
+        res.sendStatus(403);
+        return;
+    } else {
+        console.debug('Request is valid and authorized');
+        res.header('x-forward-user', getEmailFromAuthCookie(req, config));
+        res.sendStatus(200);
+    }
 });
 
 app.get('/callback', (req: Request, res: Response) => {
@@ -46,6 +61,7 @@ app.get('/callback', (req: Request, res: Response) => {
         const token = p.exchangeCode(redirectUrl(req), req.query['code']);
         const user = p.getUser(token);
         makeAuthCookie(req, res, config, user.email);
+        console.info(`Authenticated ${user.email} via ${p.name()}`)
         res.redirect(307, redirect);
         return;
     }

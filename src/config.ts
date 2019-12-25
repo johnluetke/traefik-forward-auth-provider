@@ -6,10 +6,14 @@ const name = require("../package.json").name;
 const configLoader = cosmiconfigSync(name);
 
 export interface Config {
+    authCookieName: string
     csrfCookieName: string;
     port: number;
     provider: string;
     providers: {[key: string]: any};
+    secret: string;
+    userBlacklist: string[],
+    userWhitelist: string[]
 }
 
 let configuration: Config;
