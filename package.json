@@ -1,6 +1,6 @@
 {
   "name": "traefik-forward-auth-provider",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Allows Traefik to forward authentication requests to a third-party OAuth provider",
   "bin": "./dist/cli.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "testEnvironment": "node",
     "testMatch": [
       "**/*.spec.ts"
-  ]
+    ]
   },
   "traefik-forward-auth-provider": {
     "authCookieName": "_traefik-forward-auth-provider-user",
